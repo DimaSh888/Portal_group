@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
-
+from .models import Advertisement
 from .forms import ProfileForm, RegisterForm
 
 
@@ -62,3 +62,27 @@ def edit_profile(request):
 def logout_view(request):
     logout(request)
     return redirect("main")
+
+# Advertisement
+
+
+@login_required
+def create_advertisement(request):
+    if request.method == "POST":
+        title = request.POST.get("title")
+        text = request.POST.get("text")
+
+        if title and text:
+            Advertisement.objects.create(
+                title=title,
+                text=text,
+                creator=request.user
+            )
+            return redirect("advertisement")
+
+    return render(request, "portal_group/create_advertisement.html")
+
+
+def advertisement(request):
+    advertisements = Advertisement.objects.all().order_by("-created_at")
+    return render(request, "portal_group/advertisement.html", {"advertisements": advertisements})
