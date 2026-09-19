@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Category removal</h1>
+
+    <p>
+        Do you really want to delete the category?
+        <strong>{{ category.name }}</strong>
+    </p>
+
+    <p>
+        Attention: deleting a category may also delete the topics associated with it.
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <button type="submit">
+            Yes, delete
+        </button>
+
+        <a href="{% url 'category_detail' category.id %}">
+            Cancel
+        </a>
+    </form>
+{% endblock %}

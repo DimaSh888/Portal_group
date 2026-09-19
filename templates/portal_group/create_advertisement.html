@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Create advertisement — Portal Group{% endblock %}
+{% block content %}
+
+<section class="advertisement-form-page">
+    <div class="form-card">
+        <div class="form-heading">
+            <span class="page-label">PORTAL GROUP</span>
+            <h1>Create advertisement</h1>
+            <p>Share an announcement with the community.</p>
+        </div>
+
+        <form method="post" class="advertisement-form">
+            {% csrf_token %}
+
+            <div class="form-field">
+                <label for="title">Title</label>
+                <input type="text" id="title" name="title" maxlength="50" placeholder="Enter a title" required>
+            </div>
+
+            <div class="form-field">
+                <label for="text">Text</label>
+                <textarea id="text" name="text" rows="8" placeholder="Write your announcement..." required></textarea>
+            </div>
+
+            <div class="form-actions">
+                <a class="secondary-button" href="{% url 'advertisement' %}">Cancel</a>
+                <button type="submit" class="primary-button">Create advertisement</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Forum</h1>
+
+{% if user.is_authenticated %}
+    <a class="forum_c" href="{% url 'create_topic' %}">
+        <span class="brand-mark">Create a topic</span>
+    </a>
+    <a class="forum_c" href="{% url 'create_category' %}">
+        <span class="brand-mark">Create category</span>
+    </a>
+{% endif %}
+
+<hr>
+
+{% if categories %}
+
+    {% for category in categories %}
+
+        <div class="category">
+            <h2>
+                <a href="{% url 'category_detail' category.id %}">
+                    {{ category.name }}
+                </a>
+            </h2>
+
+            {% if category.description %}
+                <p>{{ category.description }}</p>
+            {% endif %}
+        </div>
+
+    {% endfor %}
+
+{% else %}
+
+    <p>There aren't any categories yet</p>
+
+{% endif %}
+
+{% endblock %}

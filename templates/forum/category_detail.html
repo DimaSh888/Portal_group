@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>{{ category.name }}</h1>
+
+{% if category.description %}
+    <p>{{ category.description }}</p>
+{% endif %}
+
+<a href="{% url 'topic_list' %}"> Back to the forum</a>
+
+{% if user.is_authenticated %}
+    <a href="{% url 'create_topic_in_category' category.id %}">
+        Create a topic
+    </a>
+
+    <a href="{% url 'delete_category' category.id %}">
+        Delete category
+    </a>
+{% endif %}
+
+<hr>
+
+{% if topics %}
+
+    {% for topic in topics %}
+
+        <div class="topic">
+            <h2>
+                <a href="{% url 'topic_detail' topic.id %}">
+                    {{ topic.title }}
+                </a>
+            </h2>
+
+            <p>
+                Author: {{ topic.author }}
+            </p>
+
+            <p>
+                Created: {{ topic.created_at }}
+            </p>
+        </div>
+
+        <hr>
+
+    {% endfor %}
+
+{% else %}
+
+    <p>There are no topics in this category yet</p>
+
+{% endif %}
+
+{% endblock %}
