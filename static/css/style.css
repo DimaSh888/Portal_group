@@ -109,3 +109,26 @@ button {
     .brand-mark { width: 200px; }
     .page-shell { width: calc(100% - 24px); }
 }
+
+.forum_c {
+    display: inline-flex;
+    align-items: center;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text);
+    text-decoration: none;
+    letter-spacing: -.02em;
+}
+
+.forum_mark {
+    display: inline-grid;
+    place-items: center;
+    width: 260px;
+    height: 31px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--primary), #7677f0);
+    color: #000000;
+    margin-right: 9px;
+    box-shadow: 0 7px 16px rgba(91, 92, 226, .24);
+}

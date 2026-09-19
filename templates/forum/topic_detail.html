@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>{{ topic.title }}</h1>
+
+<p>
+    Author: {{ topic.author }}
+</p>
+
+<p>
+    Created: {{ topic.created_at }}
+</p>
+
+<hr>
+
+{% for post in posts %}
+
+    <div class="post">
+
+        <strong>{{ post.author }}</strong>
+
+        <p>
+            {{ post.content }}
+        </p>
+
+        <small>
+            {{ post.created_at }}
+        </small>
+
+    </div>
+
+    <hr>
+
+{% empty %}
+
+    <p>No messages yet</p>
+
+{% endfor %}
+
+{% if user.is_authenticated %}
+
+    <h2>Reply</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit">
+            Submit
+        </button>
+    </form>
+
+{% else %}
+
+    <p>
+        <a href="{% url 'login' %}">Log in</a>,
+        to leave a message.
+    </p>
+
+{% endif %}
+
+{% endblock %}
