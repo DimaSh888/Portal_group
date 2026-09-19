@@ -24,4 +24,5 @@ urlpatterns = [
     path('admin-panel/polls/<int:poll_id>/edit/', voting_views.edit_poll, name='edit_poll'),
     path('admin-panel/polls/<int:poll_id>/delete/', voting_views.delete_poll, name='delete_poll'),
     path('admin-panel/polls/<int:poll_id>/choices/<int:choice_id>/delete/',voting_views.delete_choice,name='delete_choice'),
+    path("advertisement/delete/<int:id>/", views.delete_advertisement, name="delete_advertisement"),
 ]
