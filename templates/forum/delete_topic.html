@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Topic removal</h1>
+
+    <p>
+        Do you really want to delete the topic?
+        <strong>{{ topic.title  }}</strong>
+    </p>
+
+    <p>
+        Attention: deleting a topic may also delete comments associated with it.
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <button type="submit">
+            Yes, delete
+        </button>
+
+        <a href="{% url 'category_detail' topic.id %}">
+            Cancel
+        </a>
+    </form>
+{% endblock %}

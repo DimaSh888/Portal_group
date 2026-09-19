@@ -3,7 +3,12 @@
 {% block content %}
 
 <h1>{{ topic.title }}</h1>
-
+<a class="forum_c" href="{% url 'category_detail' topic.category.id %}">
+    <span class="brand-mark">Back to the forum</span>
+</a>
+<a class="forum_c" href="{% url 'delete_topic' topic.id %}">
+        <span class="brand-mark">Delete topic</span>
+</a>
 <p>
     Author: {{ topic.author }}
 </p>
@@ -28,8 +33,26 @@
             {{ post.created_at }}
         </small>
 
+        {% if post.image %}
+            <div class="post-image">
+                <img src="{{ post.image.url }}" alt="Attached image">
+            </div>
+        {% endif %}
     </div>
 
+    <div class="image-upload">
+        <label for="{{ form.image.id_for_label }}">
+            📷 Add image
+        </label>
+
+        {{ form.image }}
+
+        {% if form.image.errors %}
+            <div class="form-error">
+                {{ form.image.errors }}
+            </div>
+    {% endif %}
+</div>
     <hr>
 
 {% empty %}
@@ -42,7 +65,7 @@
 
     <h2>Reply</h2>
 
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
 
         {{ form.as_p }}

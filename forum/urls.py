@@ -32,6 +32,11 @@ urlpatterns = [
         views.topic_detail,
         name="topic_detail",
     ),
+    path(
+    "topic/<int:topic_id>/delete/",
+    views.delete_topic,
+    name="delete_topic",
+    ),
 
     path(
         "create_topic/",

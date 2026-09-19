@@ -1,6 +1,7 @@
 from django.urls import path
 from portal_group import views
-
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
     path('', views.MainView.as_view(), name='main'),
     path('register/', views.register, name='register'),
@@ -16,3 +17,8 @@ urlpatterns = [
     path('advertisement/', views.advertisement, name='advertisement'),
     path('advertisement/create/', views.create_advertisement, name='create_advertisement'),
 ]
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT
+    )

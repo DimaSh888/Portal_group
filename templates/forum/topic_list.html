@@ -2,40 +2,154 @@
 
 {% block content %}
 
-<h1>Forum</h1>
+<div class="forum-page-header">
 
-{% if user.is_authenticated %}
-    <a class="forum_c" href="{% url 'create_topic' %}">
-        <span class="brand-mark">Create a topic</span>
-    </a>
-    <a class="forum_c" href="{% url 'create_category' %}">
-        <span class="brand-mark">Create category</span>
-    </a>
-{% endif %}
+    <div>
 
-<hr>
+
+        <h1>Forum</h1>
+
+        <p>
+            Discuss topics, ask questions, and answer others.
+        </p>
+    </div>
+
+    {% if user.is_authenticated %}
+
+        <div class="forum-actions">
+
+            <a class="primary-button" href="{% url 'create_topic' %}">
+                + Create a topic
+            </a>
+
+            <a class="secondary-button" href="{% url 'create_category' %}">
+                + Create category
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
 
 {% if categories %}
 
-    {% for category in categories %}
+    <div class="category-list">
 
-        <div class="category">
-            <h2>
-                <a href="{% url 'category_detail' category.id %}">
-                    {{ category.name }}
+        {% for category in categories %}
+
+            <article class="category-card">
+
+                <div class="category-main">
+
+                    <div class="category-icon">
+                        💬
+                    </div>
+
+
+                    <div class="category-info">
+
+                        <h2>
+                            <a href="{% url 'category_detail' category.id %}">
+                                {{ category.name }}
+                            </a>
+                        </h2>
+
+
+                        {% if category.description %}
+
+                            <p>
+                                {{ category.description }}
+                            </p>
+
+                        {% else %}
+
+                            <p class="muted-text">
+                                No description yet.
+                            </p>
+
+                        {% endif %}
+
+
+                        <div class="category-stats">
+
+                            <span>
+                                {{ category.topic_count }}
+                                topic{{ category.topic_count|pluralize }}
+                            </span>
+
+                            <span>
+                                {{ category.post_count }}
+                                message{{ category.post_count|pluralize }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="category-latest">
+
+                    <span class="latest-label">
+                        Latest topic
+                    </span>
+
+
+                    {% with latest_topic=category.topics.all|dictsortreversed:"created_at"|first %}
+
+                        {% if latest_topic %}
+
+                            <a href="{% url 'topic_detail' latest_topic.id %}">
+                                {{ latest_topic.title }}
+                            </a>
+
+                            <small>
+                                by {{ latest_topic.author }}
+                            </small>
+
+                        {% else %}
+
+                            <span class="muted-text">
+                                No topics yet
+                            </span>
+
+                        {% endif %}
+
+                    {% endwith %}
+
+                </div>
+
+
+                <a
+                    class="category-arrow"
+                    href="{% url 'category_detail' category.id %}"
+                >
+                    →
                 </a>
-            </h2>
 
-            {% if category.description %}
-                <p>{{ category.description }}</p>
-            {% endif %}
-        </div>
+            </article>
 
-    {% endfor %}
+        {% endfor %}
+
+    </div>
+
 
 {% else %}
 
-    <p>There aren't any categories yet</p>
+    <div class="empty-state">
+
+        <h2>
+            There aren't any categories yet
+        </h2>
+
+        <p>
+            Create the first forum category to get started.
+        </p>
+
+    </div>
 
 {% endif %}
 
