@@ -64,3 +64,84 @@ def poll_results(request, poll_id):
         'total_votes': total_votes,
         'results': results
     })
+
+@login_required
+def admin_polls(request):
+    if not request.user.is_superuser:
+        return render(request, 'portal_group/register_denied.html')
+
+    polls = Poll.objects.all().order_by('-created_at')
+
+    return render(request, 'voting/admin_polls.html', {
+        'polls': polls
+    })
+
+@login_required
+def create_poll(request):
+    if not request.user.is_superuser:
+        return render(request, 'portal_group/register_denied.html')
+
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+
+        if title:
+            Poll.objects.create(
+                title=title,
+                description=description
+            )
+
+            return redirect('admin_polls')
+
+    return render(request, 'voting/create_poll.html')
+
+@login_required
+def edit_poll(request, poll_id):
+    if not request.user.is_superuser:
+        return render(request, 'portal_group/register_denied.html')
+
+    poll = Poll.objects.get(id=poll_id)
+
+    if request.method == 'POST':
+        text = request.POST.get('text')
+
+        if text:
+            poll.choices.create(text=text)
+
+            return redirect('edit_poll', poll_id=poll.id)
+
+    return render(request, 'voting/edit_poll.html', {
+        'poll': poll
+    })
+
+@login_required
+def delete_poll(request, poll_id):
+    if not request.user.is_superuser:
+        return render(request, 'portal_group/register_denied.html')
+
+    poll = Poll.objects.get(id=poll_id)
+
+    if request.method == 'POST':
+        poll.delete()
+        return redirect('admin_polls')
+
+    return render(request, 'voting/delete_poll.html', {
+        'poll': poll
+    })
+
+@login_required
+def delete_choice(request, poll_id, choice_id):
+    if not request.user.is_superuser:
+        return render(request, 'portal_group/register_denied.html')
+
+    poll = Poll.objects.get(id=poll_id)
+    choice = poll.choices.get(id=choice_id)
+
+    if request.method == 'POST':
+        choice.delete()
+        return redirect('edit_poll', poll_id=poll.id)
+
+    return render(request, 'voting/delete_choice.html', {
+        'poll': poll,
+        'choice': choice
+    })
