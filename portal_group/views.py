@@ -63,6 +63,9 @@ def logout_view(request):
     logout(request)
     return redirect("main")
 
+def forum(request):
+    return render(request, 'topic_list.html')
+
 # Advertisement
 
 
