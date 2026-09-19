@@ -24,11 +24,17 @@
                 Profile
             </a>
 
+        {% if user.is_superuser %}
+            <a href="{% url 'admin_panel' %}">
+                Admin Panel
+            </a>
+        {% endif %}
+
             <a href="{% url 'logout' %}">
                 Log out
             </a>
 
-            
+    
 
         {% else %}
 
@@ -36,13 +42,10 @@
                 Log in
             </a>
 
-            <a href="{% url 'register' %}">
-                Sign up
-            </a>
 
-        {% endif %}
+    {% endif %}
 
-    </nav>
+</nav>
 
 </header>
 

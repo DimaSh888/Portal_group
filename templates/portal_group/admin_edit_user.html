@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Edit User{% endblock %}
+
+{% block content %}
+
+<div class="auth-container">
+
+    <h1>Edit User</h1>
+
+    <p>Editing user: <strong>{{ edit_user.username }}</strong></p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit" class="admin-button">
+            Save changes
+        </button>
+    </form>
+
+</div>
+
+{% endblock %}

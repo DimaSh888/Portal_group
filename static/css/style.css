@@ -367,3 +367,101 @@ button {
     .form-actions { flex-direction: column-reverse; }
     .form-actions .primary-button, .form-actions .secondary-button { width: 100%; }
 }
+
+.admin-button {
+    padding: 12px 24px;
+    margin-top: 20px;
+    background: #222;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.admin-button:hover {
+    background: #444;
+}
+
+.user-card {
+    width: 100%;
+    max-width: 980px;
+    margin-top: 16px;
+    padding: 24px 28px;
+
+    background: #fff;
+    border: none;
+    border-radius: 16px;
+
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .025);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.user-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0, 0, .035);
+}
+
+.user-card h3 {
+    margin: 0 0 12px;
+    font-size: 22px;
+    letter-spacing: -.02em;
+    color: #1f2030;
+}
+
+.user-card p {
+    margin: 6px 0;
+    color: #74758a;
+    font-size: 14px;
+}
+
+.admin-users-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.admin-users-list .user-card {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 24px 28px;
+
+    background: #ffffff;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .025);
+}
+
+.admin-users-list .user-card h3 {
+    margin: 0 0 10px;
+    font-size: 22px;
+    color: #1f2030;
+}
+
+.admin-users-list .user-card p {
+    margin: 5px 0;
+    color: #74758a;
+    font-size: 14px;
+}
+
+.user-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-left: auto;
+    margin-top: -60px;
+    align-items: stretch;
+    width: 110px;
+}
+
+.user-actions .admin-button {
+    margin-top: 0;
+    text-decoration: none;
+    width: 110px;
+    text-align: center;
+}
+.user-actions form {
+    margin: 0;
+}
