@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
 from .models import Advertisement
-from .forms import ProfileForm, RegisterForm
+from .forms import ProfileForm, RegisterForm, AdminUserForm
 
 
 class MainView(TemplateView):
@@ -97,7 +97,6 @@ def edit_profile(request):
 
     return render(request, "portal_group/edit_profile.html", {"form": form})
 
-
 @login_required
 def logout_view(request):
     logout(request)
@@ -133,3 +132,99 @@ def create_advertisement(request):
 def advertisement(request):
     advertisements = Advertisement.objects.all().order_by("-created_at")
     return render(request, "portal_group/advertisement.html", {"advertisements": advertisements})
+
+@login_required
+def admin_panel(request):
+    if not request.user.is_superuser:
+        return render(request, 'portal_group/register_denied.html')
+
+    return render(request, 'portal_group/admin_panel.html')
+
+@login_required
+def admin_users(request):
+    if not request.user.is_superuser:
+        return render(request, 'portal_group/register_denied.html')
+
+    from django.contrib.auth.models import User
+
+    users = User.objects.all()
+
+    for user in users:
+        if user.is_superuser:
+            user.role = 'Administrator'
+        elif user.groups.filter(name='Teacher').exists():
+            user.role = 'Teacher'
+        elif user.groups.filter(name='Student').exists():
+            user.role = 'Student'
+        else:
+            user.role = 'Not assigned'
+
+    return render(request, 'portal_group/admin_users.html', {
+        'users': users
+    })
+
+@login_required
+def admin_edit_user(request, user_id):
+    if not request.user.is_superuser:
+        return render(request, 'portal_group/register_denied.html')
+
+    from django.contrib.auth.models import User
+    from .forms import AdminUserForm
+
+    user = User.objects.get(id=user_id)
+
+    if request.method == "POST":
+        form = AdminUserForm(request.POST, instance=user)
+
+        if form.is_valid():
+            form.save()
+
+            role = form.cleaned_data['role']
+
+            user.groups.clear()
+            user.is_superuser = False
+            user.is_staff = False
+
+            if role == 'Administrator':
+                user.is_superuser = True
+                user.is_staff = True
+
+            elif role == 'Teacher':
+                from django.contrib.auth.models import Group
+                group = Group.objects.get(name='Teacher')
+                user.groups.add(group)
+
+            elif role == 'Student':
+                from django.contrib.auth.models import Group
+                group = Group.objects.get(name='Student')
+                user.groups.add(group)
+
+            user.save()
+
+            return redirect("admin_users")
+
+    else:
+        form = AdminUserForm(instance=user)
+
+    return render(request, "portal_group/admin_edit_user.html", {
+        "form": form,
+        "edit_user": user
+    })
+
+
+@login_required
+def admin_delete_user(request, user_id):
+    if not request.user.is_superuser:
+        return render(request, 'portal_group/register_denied.html')
+
+    from django.contrib.auth.models import User
+
+    user = User.objects.get(id=user_id)
+
+    if user == request.user:
+        return redirect("admin_users")
+
+    if request.method == "POST":
+        user.delete()
+
+    return redirect("admin_users")
