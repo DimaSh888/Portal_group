@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="auth-container">
+
+    <h1>Registration unavailable</h1>
+
+    <p>
+        You are not an administrator.
+    </p>
+
+    <p>
+        Only administrators can register new users.
+    </p>
+
+    <p>
+        Please contact the administrator if you need an account.
+    </p>
+
+    <p>
+        <a href="{% url 'main' %}">
+            ← Back to Home
+        </a>
+    </p>
+
+</div>
+
+{% endblock %}
