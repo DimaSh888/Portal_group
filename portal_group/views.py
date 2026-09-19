@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.views.generic import TemplateView
 from .models import Advertisement
 from .forms import ProfileForm, RegisterForm, AdminUserForm
@@ -10,6 +10,7 @@ class MainView(TemplateView):
     template_name = "portal_group/main.html"
 
 
+# Authorisation
 def register(request):
 
     if not request.user.is_authenticated or not request.user.is_superuser:
@@ -43,6 +44,7 @@ def register(request):
         'form': form
     })
 
+
 def login_view(request):
     if request.method == "POST":
         username = request.POST.get("username", "")
@@ -59,6 +61,7 @@ def login_view(request):
 
     return render(request, "portal_group/login.html")
 
+
 def teacher_required(view_func):
     return user_passes_test(
         lambda user: (
@@ -69,6 +72,7 @@ def teacher_required(view_func):
             )
         )
     )(view_func)
+
 
 @login_required
 def profile(request):
@@ -85,6 +89,7 @@ def profile(request):
         'role': role
     })
 
+
 @login_required
 def edit_profile(request):
     if request.method == "POST":
@@ -97,6 +102,7 @@ def edit_profile(request):
 
     return render(request, "portal_group/edit_profile.html", {"form": form})
 
+
 @login_required
 def logout_view(request):
     logout(request)
@@ -106,13 +112,29 @@ def logout_view(request):
 @teacher_required
 def teacher_page(request):
     return render(request, 'portal_group/teacher_page.html')
+
+
 def forum(request):
     return render(request, 'topic_list.html')
 
 # Advertisement
 
 
-@login_required
+def advertisement_creator_required(view_func):
+    # Administrators and teachers can create advertisements.
+    # Students/users can only view advertisements.
+    return user_passes_test(
+        lambda user: (
+            user.is_authenticated
+            and (
+                user.is_superuser
+                or user.groups.filter(name='Teacher').exists()
+            )
+        )
+    )(view_func)
+
+
+@advertisement_creator_required
 def create_advertisement(request):
     if request.method == "POST":
         title = request.POST.get("title")
@@ -131,14 +153,39 @@ def create_advertisement(request):
 
 def advertisement(request):
     advertisements = Advertisement.objects.all().order_by("-created_at")
-    return render(request, "portal_group/advertisement.html", {"advertisements": advertisements})
 
+    can_create_advertisement = (
+        request.user.is_authenticated
+        and (
+            request.user.is_superuser
+            or request.user.groups.filter(name='Teacher').exists()
+        )
+    )
+
+    return render(request, "portal_group/advertisement.html", {
+        "advertisements": advertisements,
+        "can_create_advertisement": can_create_advertisement,
+    })
+
+
+@login_required
+def delete_advertisement(request, id):
+    advertisement = get_object_or_404(Advertisement, id=id)
+
+    if advertisement.creator == request.user:
+        advertisement.delete()
+
+    return redirect("advertisement")
+
+
+# Admin panel
 @login_required
 def admin_panel(request):
     if not request.user.is_superuser:
         return render(request, 'portal_group/register_denied.html')
 
     return render(request, 'portal_group/admin_panel.html')
+
 
 @login_required
 def admin_users(request):
@@ -162,6 +209,7 @@ def admin_users(request):
     return render(request, 'portal_group/admin_users.html', {
         'users': users
     })
+
 
 @login_required
 def admin_edit_user(request, user_id):
