@@ -15,11 +15,7 @@
 
     <nav class="main-nav">
         {% if user.is_authenticated %}
-
-            <a href="{% url 'topic_list' %}">
-                Forum
-            </a>
-
+        
             <a href="{% url 'profile' %}">
                 Profile
             </a>
