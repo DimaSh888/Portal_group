@@ -15,7 +15,10 @@
 
     <nav class="main-nav">
         {% if user.is_authenticated %}
-
+            <a href="{% url 'poll_list' %}">
+                Polls
+            </a>
+            
             <a href="{% url 'topic_list' %}">
                 Forum
             </a>

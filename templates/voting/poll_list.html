@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Polls{% endblock %}
+
+{% block content %}
+
+<h1>Polls</h1>
+
+<div class="poll-list">
+
+{% for poll in polls %}
+
+    <div class="poll-card">
+
+        <h2>{{ poll.title }}</h2>
+
+        {% if poll.description %}
+            <p>{{ poll.description }}</p>
+        {% endif %}
+
+        <p>
+            Created: {{ poll.created_at|date:"d.m.Y H:i" }}
+        </p>
+
+        <a href="{% url 'poll_detail' poll.id %}" class="poll-button">
+            Open
+        </a>
+
+    </div>
+
+{% empty %}
+
+    <p>No polls available yet.</p>
+
+{% endfor %}
+
+</div>
+
+{% endblock %}

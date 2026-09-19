@@ -1,5 +1,6 @@
 from django.urls import path
 from portal_group import views
+from voting import views as voting_views
 
 urlpatterns = [
     path('', views.MainView.as_view(), name='main'),
@@ -15,4 +16,7 @@ urlpatterns = [
     path('forum/', views.forum, name='topic_list'),
     path('advertisement/', views.advertisement, name='advertisement'),
     path('advertisement/create/', views.create_advertisement, name='create_advertisement'),
+    path('polls/', voting_views.poll_list, name='poll_list'),
+    path('polls/<int:poll_id>/', voting_views.poll_detail, name='poll_detail'),
+    path('polls/<int:poll_id>/results/', voting_views.poll_results, name='poll_results'),
 ]

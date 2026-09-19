@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}{{ poll.title }}{% endblock %}
+
+{% block content %}
+
+<div class="poll-container">
+
+    <h1>{{ poll.title }}</h1>
+
+    {% if poll.description %}
+        <p>{{ poll.description }}</p>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% for choice in poll.choices.all %}
+
+            <label class="poll-choice">
+                <input type="radio" name="choice" value="{{ choice.id }}">
+                {{ choice.text }}
+            </label>
+
+        {% endfor %}
+
+        <button type="submit" class="poll-vote-button">
+            Vote
+        </button>
+
+    </form>
+    <a href="{% url 'poll_list' %}" class="poll-back-button">
+        Back to Polls
+    </a>
+
+</div>
+
+{% endblock %}
