@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Advertisements — Portal Group{% endblock %}
+{% block content %}
+
+<section class="advertisements-page">
+    <div class="advertisements-header">
+        <div>
+            <span class="page-label">PORTAL GROUP</span>
+            <h1>Advertisements</h1>
+            <p>Latest announcements from the community.</p>
+        </div>
+        <a class="primary-button" href="{% url 'create_advertisement' %}">+ Create advertisement</a>
+    </div>
+
+    <div class="advertisements-list">
+        {% for advertisement in advertisements %}
+            <article class="advertisement-card">
+                <h2>{{ advertisement.title }}</h2>
+                <p>{{ advertisement.text }}</p>
+                <div class="advertisement-author">
+                    <span class="author-avatar">{{ advertisement.creator.username|first|upper }}</span>
+                    <span>Posted by <strong>{{ advertisement.creator.username }}</strong></span>
+                </div>
+                <div class="advertisement-card-top">
+                    <span class="advertisement-badge">Announcement</span>
+                    <time>{{ advertisement.created_at|date:"d.m.Y H:i" }}</time>
+                </div>
+            </article>
+        {% empty %}
+            <div class="empty-advertisements">
+                <div class="empty-icon">!</div>
+                <h2>No advertisements yet</h2>
+                <p>Be the first to create an announcement.</p>
+                <a class="primary-button" href="{% url 'create_advertisement' %}">Create advertisement</a>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+{% endblock %}
