@@ -22,7 +22,15 @@ def register(request):
             user = form.save()
 
             role = form.cleaned_data['role']
-            user.groups.add(role)
+
+            if role.name == 'Administrator':
+                user.is_superuser = True
+                user.is_staff = True
+                user.save()
+            else:
+                user.groups.add(role)
+
+            login(request, user)
 
             login(request, user)
 

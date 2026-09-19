@@ -16,9 +16,6 @@
     <nav class="main-nav">
         {% if user.is_authenticated %}
 
-        <a href="{% url 'profile' %}">
-            Profile
-        </a>
             <a href="{% url 'topic_list' %}">
                 Forum
             </a>
@@ -27,11 +24,17 @@
                 Profile
             </a>
 
+        {% if user.is_superuser %}
+            <a href="{% url 'register' %}">
+                Registration
+            </a>
+        {% endif %}
+
             <a href="{% url 'logout' %}">
                 Log out
             </a>
 
-            
+    
 
         {% else %}
 
@@ -39,21 +42,6 @@
                 Log in
             </a>
 
-        {% if user.is_superuser %}
-            <a href="{% url 'register' %}">
-                Registration
-            </a>
-        {% endif %}
-
-        <a href="{% url 'logout' %}">
-            Log out
-        </a>
-
-    {% else %}
-
-        <a href="{% url 'login' %}">
-            Log in
-        </a>
 
     {% endif %}
 
