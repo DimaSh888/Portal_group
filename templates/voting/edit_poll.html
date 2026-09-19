@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Poll{% endblock %}
+
+{% block content %}
+
+<div class="poll-container">
+
+    <h1>Edit Poll</h1>
+
+    <h2>{{ poll.title }}</h2>
+
+    {% if poll.description %}
+        <p>{{ poll.description }}</p>
+    {% endif %}
+
+    <h3>Choices</h3>
+
+    <div class="poll-list">
+
+        {% for choice in poll.choices.all %}
+
+        <div class="poll-card">
+
+            <p>{{ choice.text }}</p>
+        
+            <a href="{% url 'delete_choice' poll.id choice.id %}" class="poll-button">
+                Delete
+            </a>
+        
+        </div>
+
+        {% empty %}
+
+            <p>No choices yet.</p>
+
+        {% endfor %}
+
+    </div>
+
+    <h3>Add Choice</h3>
+
+    <form method="post">
+
+        {% csrf_token %}
+
+        <input
+            type="text"
+            name="text"
+            placeholder="Enter choice"
+            required
+        >
+
+        <button type="submit" class="admin-button">
+            Add Choice
+        </button>
+
+    </form>
+
+    <a href="{% url 'admin_polls' %}" class="poll-back-button">
+        Back to Manage Polls
+    </a>
+
+</div>
+
+{% endblock %}

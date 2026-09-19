@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Polls{% endblock %}
+
+{% block content %}
+
+<div class="poll-container">
+
+    <h1>Manage Polls</h1>
+
+    <a href="{% url 'create_poll' %}" class="poll-button">
+        Create Poll
+    </a>
+
+    <a href="{% url 'poll_list' %}" class="poll-back-button">
+        View Polls
+    </a>
+
+    <div class="poll-list">
+
+        {% for poll in polls %}
+
+            <div class="poll-card">
+
+                <h2>{{ poll.title }}</h2>
+
+                {% if poll.description %}
+                    <p>{{ poll.description }}</p>
+                {% endif %}
+
+                <p>
+                    Created: {{ poll.created_at|date:"d.m.Y H:i" }}
+                </p>
+
+                <a href="{% url 'poll_detail' poll.id %}" class="poll-button">
+                    Open
+                </a>
+
+                <a href="{% url 'edit_poll' poll.id %}" class="poll-button">
+                    Edit
+                </a>
+
+                <a href="{% url 'delete_poll' poll.id %}" class="poll-button">
+                    Delete
+                </a>
+
+            </div>
+
+        {% empty %}
+
+            <p>No polls available yet.</p>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}
