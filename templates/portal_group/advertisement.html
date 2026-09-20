@@ -9,7 +9,9 @@
             <h1>Advertisements</h1>
             <p>Latest announcements from the community.</p>
         </div>
+        {% if can_create_advertisement %}
         <a class="primary-button" href="{% url 'create_advertisement' %}">+ Create advertisement</a>
+        {% endif %}
     </div>
 
     <div class="advertisements-list">
@@ -25,13 +27,22 @@
                     <span class="advertisement-badge">Announcement</span>
                     <time>{{ advertisement.created_at|date:"d.m.Y H:i" }}</time>
                 </div>
+                <br>
+                {% if advertisement.creator == request.user %} 
+                <form method="post" action="{% url 'delete_advertisement' advertisement.id %}"> 
+                    {% csrf_token %} 
+                    <button type="submit">Delete</button> 
+                </form> 
+                {% endif %}
             </article>
         {% empty %}
             <div class="empty-advertisements">
                 <div class="empty-icon">!</div>
                 <h2>No advertisements yet</h2>
                 <p>Be the first to create an announcement.</p>
+                {% if can_create_advertisement %}
                 <a class="primary-button" href="{% url 'create_advertisement' %}">Create advertisement</a>
+                {% endif %}
             </div>
         {% endfor %}
     </div>

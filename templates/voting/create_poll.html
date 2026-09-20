@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Create Poll{% endblock %}
+
+{% block content %}
+
+<div class="poll-container">
+
+    <h1>Create Poll</h1>
+
+    <form method="post">
+
+        {% csrf_token %}
+
+        <label>
+            Poll title
+        </label>
+
+        <input
+            type="text"
+            name="title"
+            placeholder="Enter poll title"
+            required
+        >
+
+        <label>
+            Description
+        </label>
+
+        <textarea
+            name="description"
+            placeholder="Enter poll description"
+        ></textarea>
+
+        <button type="submit" class="admin-button">
+            Create Poll
+        </button>
+
+    </form>
+
+    <a href="{% url 'admin_polls' %}" class="poll-back-button">
+        Back to Manage Polls
+    </a>
+
+</div>
+
+{% endblock %}

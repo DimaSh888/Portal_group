@@ -15,4 +15,20 @@
     </a>
 </section>
 
+<section class="hero">
+    <h1>Forum</h1>
+    <p>Discussion forum here.</p>
+    <a class="brand" href="{% url 'topic_list' %}">
+        <button type='submit'>Go to</button>
+    </a>
+</section>
+
+<section class="hero">
+    <h1>Poll</h1>
+    <p>Poll.</p>
+    <a class="brand" href="{% url 'poll_list' %}">
+        <button type='submit'>Go to</button>
+    </a>
+</section>
+
 {% endblock %}
