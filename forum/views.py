@@ -1,12 +1,22 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
-
+from django.db.models import Count, Max
 from .forms import CategoryForm, PostForm, TopicForm
 from .models import Category, Post, Topic
 
 
 def topic_list(request):
-    categories = Category.objects.all()
+    categories = (
+        Category.objects
+        .annotate(
+            topic_count=Count("topics", distinct=True),
+            post_count=Count("topics__posts", distinct=True),
+            latest_topic_date=Max("topics__created_at"),
+        )
+        .prefetch_related("topics")
+        .order_by("name")
+    )
+
     return render(
         request,
         "forum/topic_list.html",
@@ -38,7 +48,7 @@ def topic_detail(request, topic_id):
         if not request.user.is_authenticated:
             return redirect("login")
 
-        form = PostForm(request.POST)
+        form = PostForm(request.POST, request.FILES)
 
         if form.is_valid():
             post = form.save(commit=False)
@@ -133,5 +143,21 @@ def delete_category(request, category_id):
         "forum/delete_category.html",
         {
             "category": category,
+        },
+    )
+
+@login_required
+def delete_topic(request, topic_id):
+    topic = get_object_or_404(Topic, id=topic_id)
+
+    if request.method == "POST":
+        topic.delete()
+        return redirect("topic_list")
+
+    return render(
+        request,
+        "forum/delete_topic.html",
+        {
+            "topic": topic,
         },
     )

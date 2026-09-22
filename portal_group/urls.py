@@ -1,5 +1,7 @@
 from django.urls import path
 from portal_group import views
+from django.conf import settings
+from django.conf.urls.static import static
 from voting import views as voting_views
 
 urlpatterns = [
@@ -26,3 +28,8 @@ urlpatterns = [
     path('admin-panel/polls/<int:poll_id>/choices/<int:choice_id>/delete/',voting_views.delete_choice,name='delete_choice'),
     path("advertisement/delete/<int:id>/", views.delete_advertisement, name="delete_advertisement"),
 ]
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT
+    )

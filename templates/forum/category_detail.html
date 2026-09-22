@@ -2,54 +2,102 @@
 
 {% block content %}
 
-<h1>{{ category.name }}</h1>
+<div class="forum-page-header">
 
-{% if category.description %}
-    <p>{{ category.description }}</p>
-{% endif %}
+    <div>
+        <a class="back-link" href="{% url 'topic_list' %}">
+            ← Back to categories
+        </a>
 
-<a href="{% url 'topic_list' %}"> Back to the forum</a>
+        <h1>{{ category.name }}</h1>
 
-{% if user.is_authenticated %}
-    <a href="{% url 'create_topic_in_category' category.id %}">
-        Create a topic
-    </a>
+        {% if category.description %}
+            <p>{{ category.description }}</p>
+        {% else %}
+            <p>Topics in this category</p>
+        {% endif %}
+    </div>
 
-    <a href="{% url 'delete_category' category.id %}">
-        Delete category
-    </a>
-{% endif %}
+    {% if user.is_staff %}
+        <div class="category-actions">
 
-<hr>
+            <a class="forum-button" href="{% url 'create_topic' %}">
+                + New topic
+            </a>
 
-{% if topics %}
+            <a class="forum-button forum-button-danger"
+               href="{% url 'delete_category' category.id %}">
+                Delete category
+            </a>
 
-    {% for topic in topics %}
-
-        <div class="topic">
-            <h2>
-                <a href="{% url 'topic_detail' topic.id %}">
-                    {{ topic.title }}
-                </a>
-            </h2>
-
-            <p>
-                Author: {{ topic.author }}
-            </p>
-
-            <p>
-                Created: {{ topic.created_at }}
-            </p>
         </div>
+    {% endif %}
 
-        <hr>
+</div>
 
-    {% endfor %}
 
-{% else %}
+    <div class="topic-list">
 
-    <p>There are no topics in this category yet</p>
+        {% for topic in topics %}
 
-{% endif %}
+            <a class="topic-card" href="{% url 'topic_detail' topic.id %}">
+
+                <div class="topic-icon">
+                    💬
+                </div>
+
+                <div class="topic-main">
+
+                    <div class="topic-title-row">
+                        <h2>{{ topic.title }}</h2>
+
+                        <span class="topic-arrow">
+                            →
+                        </span>
+                    </div>
+
+                    <p class="topic-author">
+                        Started by <strong>{{ topic.author.username }}</strong>
+                    </p>
+
+                    <div class="topic-meta">
+
+                        <span>
+                            💬 {{ topic.posts.count }} messages
+                        </span>
+
+                        <span>
+                            📅 {{ topic.created_at|date:"d.m.Y H:i" }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </a>
+
+        {% empty %}
+
+            <div class="empty-state">
+                <div class="empty-icon">💬</div>
+
+                <h2>No topics yet</h2>
+
+                <p>
+                    There are no topics in this category yet.
+                </p>
+
+                {% if user.is_staff %}
+                    <a class="forum-button" href="{% url 'create_topic' %}">
+                        Create the first topic
+                    </a>
+                {% endif %}
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
 
 {% endblock %}
