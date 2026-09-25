@@ -12,6 +12,9 @@
         <p>{{ poll.description }}</p>
     {% endif %}
 
+    {% if already_voted %}
+        <p class="poll-notice">You have already voted in this poll. You can view the results below.</p>
+    {% else %}
     <form method="post">
         {% csrf_token %}
 
@@ -29,6 +32,11 @@
         </button>
 
     </form>
+    {% endif %}
+
+    <div class="poll-actions">
+        <a href="{% url 'poll_results' poll.id %}" class="poll-button poll-button-secondary">View Results</a>
+    </div>
     <a href="{% url 'poll_list' %}" class="poll-back-button">
         Back to Polls
     </a>

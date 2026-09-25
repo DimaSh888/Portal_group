@@ -3,37 +3,41 @@
 {% block title %}Polls{% endblock %}
 
 {% block content %}
+<div class="poll-container">
+    <div class="poll-page-header">
+        <h1>Polls</h1>
 
-<h1>Polls</h1>
-
-<div class="poll-list">
-
-{% for poll in polls %}
-
-    <div class="poll-card">
-
-        <h2>{{ poll.title }}</h2>
-
-        {% if poll.description %}
-            <p>{{ poll.description }}</p>
+        {% if can_manage_polls %}
+            <a href="{% url 'create_poll' %}" class="poll-button">Create Poll</a>
         {% endif %}
-
-        <p>
-            Created: {{ poll.created_at|date:"d.m.Y H:i" }}
-        </p>
-
-        <a href="{% url 'poll_detail' poll.id %}" class="poll-button">
-            Open
-        </a>
-
     </div>
 
-{% empty %}
+    <div class="poll-list">
+        {% for poll in polls %}
+            <div class="poll-card">
+                <h2>{{ poll.title }}</h2>
 
-    <p>No polls available yet.</p>
+                {% if poll.description %}
+                    <p>{{ poll.description }}</p>
+                {% endif %}
 
-{% endfor %}
+                <p>Created: {{ poll.created_at|date:"d.m.Y H:i" }}</p>
+                <p>Choices: {{ poll.choices.count }}</p>
 
+                <div class="poll-actions">
+                    <a href="{% url 'poll_detail' poll.id %}" class="poll-button">Vote</a>
+                    <a href="{% url 'poll_results' poll.id %}" class="poll-button poll-button-secondary">Results</a>
+
+                    {% if can_manage_polls %}
+                        <a href="{% url 'edit_poll' poll.id %}" class="poll-button">Edit</a>
+                        <a href="{% url 'add_choice' poll.id %}" class="poll-button">Choices</a>
+                        <a href="{% url 'delete_poll' poll.id %}" class="poll-button poll-button-danger">Delete</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <p>No polls available yet.</p>
+        {% endfor %}
+    </div>
 </div>
-
 {% endblock %}

@@ -7,12 +7,16 @@ class RegisterForm(UserCreationForm):
 
     email = forms.EmailField(required=True)
 
-    role = forms.ModelChoiceField(
-        queryset=Group.objects.filter(
-            name__in=['Student', 'Teacher', 'Administrator']
-        ),
-        empty_label=None,
-        label='Role'
+    ROLE_CHOICES = [
+        ('Student', 'Student'),
+        ('Teacher', 'Teacher'),
+        ('Administrator', 'Administrator'),
+    ]
+
+    role = forms.ChoiceField(
+        choices=ROLE_CHOICES,
+        label='Role',
+        widget=forms.Select()
     )
 
     class Meta:
@@ -36,6 +40,7 @@ class ProfileForm(forms.ModelForm):
             'first_name': 'First name',
             'last_name': 'Last name',
         }
+
 
 class AdminUserForm(forms.ModelForm):
 

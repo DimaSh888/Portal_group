@@ -3,31 +3,16 @@
 {% block title %}Delete Choice{% endblock %}
 
 {% block content %}
-
 <div class="poll-container">
-
     <h1>Delete Choice</h1>
-
-    <p>
-        Are you sure you want to delete this choice?
-    </p>
-
-    <h2>{{ choice.text }}</h2>
+    <p>Are you sure you want to delete the choice <strong>{{ choice.text }}</strong>?</p>
 
     <form method="post">
-
         {% csrf_token %}
-
-        <button type="submit" class="admin-button">
-            Delete
-        </button>
-
+        <div class="poll-actions">
+            <button type="submit" class="poll-button poll-button-danger">Yes, Delete</button>
+            <a href="{% url 'add_choice' poll.id %}" class="poll-back-button">Cancel</a>
+        </div>
     </form>
-
-    <a href="{% url 'edit_poll' poll.id %}" class="poll-back-button">
-        Cancel
-    </a>
-
 </div>
-
 {% endblock %}

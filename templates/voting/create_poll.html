@@ -3,45 +3,22 @@
 {% block title %}Create Poll{% endblock %}
 
 {% block content %}
-
 <div class="poll-container">
-
     <h1>Create Poll</h1>
 
-    <form method="post">
-
+    <form method="post" class="poll-form">
         {% csrf_token %}
 
-        <label>
-            Poll title
-        </label>
+        <label for="poll-title">Poll title</label>
+        <input id="poll-title" type="text" name="title" required>
 
-        <input
-            type="text"
-            name="title"
-            placeholder="Enter poll title"
-            required
-        >
+        <label for="poll-description">Description</label>
+        <textarea id="poll-description" name="description"></textarea>
 
-        <label>
-            Description
-        </label>
-
-        <textarea
-            name="description"
-            placeholder="Enter poll description"
-        ></textarea>
-
-        <button type="submit" class="admin-button">
-            Create Poll
-        </button>
-
+        <div class="poll-actions">
+            <button type="submit" class="poll-button">Create Poll</button>
+            <a href="{% url 'poll_list' %}" class="poll-back-button">Cancel</a>
+        </div>
     </form>
-
-    <a href="{% url 'admin_polls' %}" class="poll-back-button">
-        Back to Manage Polls
-    </a>
-
 </div>
-
 {% endblock %}

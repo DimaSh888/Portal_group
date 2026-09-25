@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Poll Choices{% endblock %}
+
+{% block content %}
+<div class="poll-container">
+    <h1>Choices: {{ poll.title }}</h1>
+
+    <form method="post" class="poll-form">
+        {% csrf_token %}
+        <label for="choice-text">New choice</label>
+        <input id="choice-text" type="text" name="text" placeholder="Enter choice" required>
+        <button type="submit" class="poll-button">Add Choice</button>
+    </form>
+
+    <h2>Current choices</h2>
+
+    <div class="poll-list">
+        {% for choice in choices %}
+            <div class="poll-card poll-choice-manage">
+                <span>{{ choice.text }}</span>
+                <a href="{% url 'delete_choice' poll.id choice.id %}" class="poll-button poll-button-danger">Delete</a>
+            </div>
+        {% empty %}
+            <p>No choices yet.</p>
+        {% endfor %}
+    </div>
+
+    <div class="poll-actions">
+        <a href="{% url 'poll_results' poll.id %}" class="poll-button poll-button-secondary">View Results</a>
+        <a href="{% url 'poll_list' %}" class="poll-back-button">Back to Polls</a>
+    </div>
+</div>
+{% endblock %}

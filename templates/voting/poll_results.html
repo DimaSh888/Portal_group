@@ -1,11 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}Results{% endblock %}
+{% block title %}Poll Results{% endblock %}
 
 {% block content %}
-
 <div class="poll-container">
-
     <h1>{{ poll.title }}</h1>
 
     {% if poll.description %}
@@ -13,47 +11,32 @@
     {% endif %}
 
     <h2>Results</h2>
-
-    <p class="total-votes">
-        Total votes: {{ total_votes }}
-    </p>
+    <p class="total-votes">Total votes: {{ total_votes }}</p>
 
     <div class="poll-results">
-
         {% for result in results %}
-
             <div class="poll-result">
-
                 <div class="poll-result-top">
-                    <span class="poll-result-name">
-                        {{ result.text }}
-                    </span>
-
-                    <span class="poll-result-votes">
-                        {{ result.votes }} votes
-                    </span>
-                    
-                    <span>
-                        {{ result.percentage }}%
-                    </span>
-                    
+                    <span class="poll-result-name">{{ result.text }}</span>
+                    <span class="poll-result-votes">{{ result.votes }} votes</span>
+                    <span class="poll-result-percentage">{{ result.percentage }}%</span>
                 </div>
 
                 <div class="poll-progress">
-                    <div
-                        class="poll-progress-bar"
-                        style="--progress: {{ choice.percentage }}%;">
-                    </div>
+                    <div class="poll-progress-bar" style="--progress: {{ result.percentage }}%;"></div>
                 </div>
-
             </div>
-
+        {% empty %}
+            <p>No choices in this poll yet.</p>
         {% endfor %}
-
     </div>
-    <a href="{% url 'poll_list' %}" class="poll-back-button">
-        Back to Polls
-    </a>
-</div>
 
+    <div class="poll-actions">
+        <a href="{% url 'poll_detail' poll.id %}" class="poll-button">Vote</a>
+        {% if can_manage_polls %}
+            <a href="{% url 'add_choice' poll.id %}" class="poll-button">Manage Choices</a>
+        {% endif %}
+        <a href="{% url 'poll_list' %}" class="poll-back-button">Back to Polls</a>
+    </div>
+</div>
 {% endblock %}

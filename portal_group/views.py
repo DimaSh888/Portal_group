@@ -24,14 +24,18 @@ def register(request):
 
             role = form.cleaned_data['role']
 
-            if role.name == 'Administrator':
+            if role == 'Administrator':
                 user.is_superuser = True
                 user.is_staff = True
                 user.save()
             else:
-                user.groups.add(role)
-
-            login(request, user)
+                match role:
+                    case 'Student':
+                        user.groups.add(1)
+                    case 'Teacer':
+                        user.groups.add(2)
+                    case 'Administrator':
+                        user.groups.add(3)
 
             login(request, user)
 

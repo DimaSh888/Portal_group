@@ -3,64 +3,22 @@
 {% block title %}Edit Poll{% endblock %}
 
 {% block content %}
-
 <div class="poll-container">
-
     <h1>Edit Poll</h1>
 
-    <h2>{{ poll.title }}</h2>
-
-    {% if poll.description %}
-        <p>{{ poll.description }}</p>
-    {% endif %}
-
-    <h3>Choices</h3>
-
-    <div class="poll-list">
-
-        {% for choice in poll.choices.all %}
-
-        <div class="poll-card">
-
-            <p>{{ choice.text }}</p>
-        
-            <a href="{% url 'delete_choice' poll.id choice.id %}" class="poll-button">
-                Delete
-            </a>
-        
-        </div>
-
-        {% empty %}
-
-            <p>No choices yet.</p>
-
-        {% endfor %}
-
-    </div>
-
-    <h3>Add Choice</h3>
-
-    <form method="post">
-
+    <form method="post" class="poll-form">
         {% csrf_token %}
 
-        <input
-            type="text"
-            name="text"
-            placeholder="Enter choice"
-            required
-        >
+        <label for="poll-title">Poll title</label>
+        <input id="poll-title" type="text" name="title" value="{{ poll.title }}" required>
 
-        <button type="submit" class="admin-button">
-            Add Choice
-        </button>
+        <label for="poll-description">Description</label>
+        <textarea id="poll-description" name="description">{{ poll.description }}</textarea>
 
+        <div class="poll-actions">
+            <button type="submit" class="poll-button">Save Changes</button>
+            <a href="{% url 'poll_list' %}" class="poll-back-button">Cancel</a>
+        </div>
     </form>
-
-    <a href="{% url 'admin_polls' %}" class="poll-back-button">
-        Back to Manage Polls
-    </a>
-
 </div>
-
 {% endblock %}
