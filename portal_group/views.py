@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views.generic import TemplateView
 from .models import Advertisement
-from .forms import ProfileForm, RegisterForm, AdminUserForm
+from .forms import ProfileForm, RegisterForm, AdminUserForm, RegisterForm2
 
 
 class MainView(TemplateView):
@@ -43,6 +43,24 @@ def register(request):
 
     else:
         form = RegisterForm()
+
+    return render(request, 'portal_group/register.html', {
+        'form': form
+    })
+
+
+def register_as_user(request):
+    if request.method == 'POST':
+        form = RegisterForm2(request.POST)
+
+        if form.is_valid():
+            user = form.save()
+            user.groups.add(3)
+
+            login(request, user)
+            return redirect('/')
+    else:
+        form = RegisterForm2()
 
     return render(request, 'portal_group/register.html', {
         'form': form
@@ -196,7 +214,7 @@ def admin_users(request):
     if not request.user.is_superuser:
         return render(request, 'portal_group/register_denied.html')
 
-    from django.contrib.auth.models import User
+    from django.contrib.auth.models import User, Group
 
     users = User.objects.all()
 
@@ -220,7 +238,7 @@ def admin_edit_user(request, user_id):
     if not request.user.is_superuser:
         return render(request, 'portal_group/register_denied.html')
 
-    from django.contrib.auth.models import User
+    from django.contrib.auth.models import User, Group
     from .forms import AdminUserForm
 
     user = User.objects.get(id=user_id)
@@ -269,7 +287,7 @@ def admin_delete_user(request, user_id):
     if not request.user.is_superuser:
         return render(request, 'portal_group/register_denied.html')
 
-    from django.contrib.auth.models import User
+    from django.contrib.auth.models import User, Group
 
     user = User.objects.get(id=user_id)
 
