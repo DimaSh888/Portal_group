@@ -5,6 +5,16 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.MainView.as_view(), name='main'),
+    path('gallery/', views.gallery, name='gallery'),
+    path('gallery/add/', views.gallery_add, name='gallery_add'),
+    path('gallery/<int:image_id>/edit/', views.gallery_edit, name='gallery_edit'),
+    path('gallery/<int:image_id>/delete/', views.gallery_delete, name='gallery_delete'),
+    path('portfolio/', views.portfolio_catalog, name='portfolio_catalog'),
+    path('portfolio/my/', views.portfolio_my, name='portfolio_my'),
+    path('portfolio/user/<int:user_id>/', views.portfolio_user, name='portfolio_user'),
+    path('portfolio/add/', views.portfolio_add, name='portfolio_add'),
+    path('portfolio/<int:work_id>/edit/', views.portfolio_edit, name='portfolio_edit'),
+    path('portfolio/<int:work_id>/delete/', views.portfolio_delete, name='portfolio_delete'),
     path('register/', views.register, name='register'),
     path('register_as_user/', views.register_as_user, name='register_as_user'),
     path('login/', views.login_view, name='login'),
