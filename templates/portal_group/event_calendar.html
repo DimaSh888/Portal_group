@@ -1,0 +1,37 @@
+{% extends "base.HTML" %}
+{% block title %}Events calendar{% endblock %}
+{% block content %}
+<section class="events-page">
+  <div class="events-header">
+    <div>
+      <p class="events-eyebrow">SCHOOL LIFE</p>
+      <h1>Events calendar</h1>
+      <p class="events-subtitle">School events, activities and important dates.</p>
+    </div>
+  {% if can_manage_events %}
+  <a class="primary-button" href="{% url 'event_create' %}">+ Create event</a>
+  {% endif %}
+</div>
+  {% if events %}
+  <div class="events-list">
+    {% for event in events %}
+    <article class="event-card">
+      <div class="event-date">
+        <strong>{{ event.event_date|date:"d" }}</strong>
+        <span>{{ event.event_date|date:"M Y" }}</span>
+      </div>
+      <div class="event-info">
+        <h2><a href="{% url 'event_detail' event.id %}">{{ event.title }}</a></h2>
+        <p>{{ event.description|truncatewords:28 }}</p>
+        <div class="event-meta">
+          {% if event.event_time %}
+          <span>{{ event.event_time|time:"H:i" }}</span>
+          {% endif %}{% if event.location %}
+          <span>{{ event.location }}</span>
+          {% endif %}
+        </div>
+      </div>
+    </article>
+  {% endfor %}</div>{% else %}<div class="empty-state"><h2>No events yet</h2><p>Upcoming school events will appear here.</p>{% if can_manage_events %}<a class="primary-button" href="{% url 'event_create' %}">Create the first event</a>{% endif %}</div>{% endif %}
+</section>
+{% endblock %}

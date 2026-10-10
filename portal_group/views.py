@@ -298,3 +298,87 @@ def admin_delete_user(request, user_id):
         user.delete()
 
     return redirect("admin_users")
+
+
+# School events calendar
+def event_manager_required(view_func):
+    return user_passes_test(
+        lambda user: user.is_authenticated and (
+            user.is_superuser or user.groups.filter(name='Teacher').exists()
+        )
+    )(view_func)
+
+
+def event_calendar(request):
+    from .models import Event
+    can_manage_events = request.user.is_authenticated and (
+        request.user.is_superuser or request.user.groups.filter(name='Teacher').exists()
+    )
+    events = Event.objects.all()
+    return render(request, 'portal_group/event_calendar.html', {
+        'events': events, 'can_manage_events': can_manage_events,
+    })
+
+
+def event_detail(request, event_id):
+    from .models import Event
+    event = get_object_or_404(Event, pk=event_id)
+    can_manage_events = request.user.is_authenticated and (
+        request.user.is_superuser or request.user.groups.filter(name='Teacher').exists()
+    )
+    return render(request, 'portal_group/event_detail.html', {
+        'event': event, 'can_manage_events': can_manage_events,
+    })
+
+
+@event_manager_required
+def event_create(request):
+    from .models import Event
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        event_date = request.POST.get('event_date', '').strip()
+        event_time = request.POST.get('event_time', '').strip() or None
+        location = request.POST.get('location', '').strip()
+        if title and description and event_date:
+            Event.objects.create(title=title, description=description, event_date=event_date,
+                                 event_time=event_time, location=location, creator=request.user)
+            return redirect('event_calendar')
+        return render(request, 'portal_group/event_form.html', {
+            'page_title': 'Create event', 'error': 'Fill in the title, description and date.',
+            'event': None, 'event_data': request.POST,
+        })
+    return render(request, 'portal_group/event_form.html', {'page_title': 'Create event', 'event': None})
+
+
+@event_manager_required
+def event_edit(request, event_id):
+    from .models import Event
+    event = get_object_or_404(Event, pk=event_id)
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        event_date = request.POST.get('event_date', '').strip()
+        if title and description and event_date:
+            event.title = title
+            event.description = description
+            event.event_date = event_date
+            event.event_time = request.POST.get('event_time', '').strip() or None
+            event.location = request.POST.get('location', '').strip()
+            event.save()
+            return redirect('event_detail', event_id=event.pk)
+        return render(request, 'portal_group/event_form.html', {
+            'page_title': 'Edit event', 'event': event, 'event_data': request.POST,
+            'error': 'Fill in the title, description and date.',
+        })
+    return render(request, 'portal_group/event_form.html', {'page_title': 'Edit event', 'event': event})
+
+
+@event_manager_required
+def event_delete(request, event_id):
+    from .models import Event
+    event = get_object_or_404(Event, pk=event_id)
+    if request.method == 'POST':
+        event.delete()
+        return redirect('event_calendar')
+    return render(request, 'portal_group/event_delete.html', {'event': event})

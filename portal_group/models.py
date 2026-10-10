@@ -13,3 +13,19 @@ class Advertisement(models.Model):
 
     def __str__(self):
         return f'{self.title}, {self.text}, {self.creator}, {self.created_at}'
+
+
+class Event(models.Model):
+    title = models.CharField(max_length=120)
+    description = models.TextField()
+    event_date = models.DateField()
+    event_time = models.TimeField(blank=True, null=True)
+    location = models.CharField(max_length=200, blank=True)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='school_events')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['event_date', 'event_time', 'title']
+
+    def __str__(self):
+        return f'{self.title} ({self.event_date})'

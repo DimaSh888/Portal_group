@@ -1,0 +1,25 @@
+{% extends "base.HTML" %}
+{% block title %}{{ event.title }}{% endblock %}
+{% block content %}
+<section class="event-detail form-card">
+    <a class="back-link" href="{% url 'event_calendar' %}">← Back to calendar</a>
+    <p class="events-eyebrow">SCHOOL EVENT</p>
+    <h1>{{ event.title }}</h1>
+    <div class="event-detail-meta">
+        <span>{{ event.event_date|date:"l, d F Y" }}</span>
+        {% if event.event_time %}<span>{{ event.event_time|time:"H:i" }}</span>
+        {% endif %}{% if event.location %}<span>{{ event.location }}</span>
+        {% endif %}
+    </div>
+    <div class="event-description">
+        {{ event.description|linebreaks }}
+    </div>
+    <p class="event-creator">Created by {{ event.creator.get_full_name|default:event.creator.username }}</p>
+    {% if can_manage_events %}
+    <div class="event-actions">
+        <a class="secondary-button" href="{% url 'event_edit' event.id %}">Edit</a>
+        <a class="secondary-button danger-button" href="{% url 'event_delete' event.id %}">Delete</a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}
