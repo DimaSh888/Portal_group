@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Portfolio — Portal Group{% endblock %}
+{% block content %}
+<section class="feature-page">
+    <header class="feature-header">
+        <div>
+            <span class="page-label">PORTAL GROUP</span>
+            {% if my_works %}
+                <h1>My portfolio</h1>
+                <p>Manage the work you have published.</p>
+            {% elif portfolio_user %}
+                <h1>{{ portfolio_user.username }}'s portfolio</h1>
+                <p>Works shared by this user.</p>
+            {% else %}
+                <h1>Portfolio catalog</h1>
+                <p>Projects and creative work from the community.</p>
+            {% endif %}
+        </div>
+        <div class="feature-actions">
+            {% if user.is_authenticated %}
+            <a class="primary-button" href="{% url 'portfolio_add' %}">+ Add work</a>
+            <a class="secondary-button" href="{% url 'portfolio_my' %}">My portfolio</a>
+            {% else %}
+            <a class="primary-button" href="{% url 'login' %}">Log in to add work</a>
+            {% endif %}
+            {% if my_works or portfolio_user %}
+            <a class="secondary-button" href="{% url 'portfolio_catalog' %}">All works</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="feature-grid">
+        {% for work in works %}
+        <article class="feature-card">
+            {% if work.image %}
+            <a class="feature-image-link" href="{{ work.image.url }}" target="_blank" rel="noopener">
+                <img class="feature-image" src="{{ work.image.url }}" alt="{{ work.title }}">
+            </a>
+            {% endif %}
+            <div class="feature-card-body">
+                <h2>{{ work.title }}</h2>
+                <p>{{ work.description|linebreaksbr }}</p>
+                {% if work.project_url %}<p><a href="{{ work.project_url }}" target="_blank" rel="noopener noreferrer">Open project ↗</a></p>{% endif %}
+                <p class="feature-meta">By <a href="{% url 'portfolio_user' work.creator_id %}">{{ work.creator.username }}</a> · {{ work.created_at|date:"d.m.Y" }}</p>
+                {% if user.is_authenticated and user.is_superuser or user == work.creator %}
+                <div class="feature-actions">
+                    <a class="secondary-button" href="{% url 'portfolio_edit' work.id %}">Edit</a>
+                    <form method="post" action="{% url 'portfolio_delete' work.id %}">
+                        {% csrf_token %}
+                        <button class="danger-button" type="submit">Delete</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </article>
+        {% empty %}
+        <div class="empty-state"><h2>No works yet</h2><p>Published portfolio projects will appear here.</p></div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
