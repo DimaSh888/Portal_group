@@ -1,5 +1,20 @@
 {% extends "base.html" %}
-{% block title %}Portal Group{% endblock %}
+{% block title %}Portal Group <section class="hero">
+    <h1>Gallery</h1>
+    <p>Browse community images.</p>
+    <a class="primary-button" href="{% url 'gallery' %}">Open gallery</a>
+</section>
+
+<section class="hero">
+    <h1>Portfolio</h1>
+    <p>Explore projects and personal portfolios.</p>
+    <a class="primary-button" href="{% url 'portfolio_catalog' %}">Open portfolio catalog</a>
+    {% if user.is_authenticated %}
+    <a class="secondary-button" href="{% url 'portfolio_my' %}">My portfolio</a>
+    {% endif %}
+</section>
+
+{% endblock %}
 {% block content %}
 
 <section class="hero">
