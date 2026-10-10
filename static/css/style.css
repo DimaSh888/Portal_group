@@ -1273,3 +1273,76 @@ button {
     border-radius: 9px;
     background: #f4f4f8;
 }
+
+
+/* Gallery and Portfolio */
+.feature-page, .feature-form-page {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+.feature-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+.feature-header h1 {
+    margin: 0;
+    font-size: clamp(30px, 5vw, 44px);
+    letter-spacing: -.04em;
+}
+.feature-header p { margin: 8px 0 0; color: #74758a; }
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 18px;
+}
+.feature-card {
+    min-width: 0;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #e8e8f0;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, .045);
+}
+.feature-image-link { display: block; background: #eeeef5; }
+.feature-image {
+    display: block;
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+.feature-card-body { padding: 20px; }
+.feature-card-body h2 { margin: 0 0 10px; font-size: 21px; overflow-wrap: anywhere; }
+.feature-card-body p { line-height: 1.55; overflow-wrap: anywhere; }
+.feature-meta { color: #77788b; font-size: 13px; }
+.feature-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.feature-actions form { margin: 0; }
+.danger-button {
+    min-height: 40px;
+    padding: 9px 14px;
+    background: #fff0ef;
+    color: #a01d14;
+}
+.danger-button:hover { background: #ffe2df; }
+.feature-form { display: grid; gap: 18px; }
+.feature-form p { display: grid; gap: 8px; margin: 0; }
+.feature-form label { font-size: 14px; font-weight: 700; }
+.feature-form input:not([type="checkbox"]), .feature-form textarea, .feature-form select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #dcdce7;
+    border-radius: 10px;
+    background: #fbfbfd;
+    color: var(--text);
+    font: inherit;
+}
+.feature-form textarea { min-height: 120px; resize: vertical; }
+.feature-form .helptext { color: #77788b; font-size: 12px; }
+.feature-form .errorlist { color: #b42318; margin: 0; }
+@media (max-width: 700px) {
+    .feature-header { align-items: stretch; flex-direction: column; }
+    .feature-header .primary-button, .feature-header .secondary-button { width: 100%; }
+    .feature-grid { grid-template-columns: 1fr; }
+}
