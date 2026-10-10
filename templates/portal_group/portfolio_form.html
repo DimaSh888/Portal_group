@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }} — Portal Group{% endblock %}
+{% block content %}
+<section class="feature-form-page">
+    <div class="form-card">
+        <div class="form-heading">
+            <span class="page-label">PORTFOLIO</span>
+            <h1>{{ page_title }}</h1>
+            <p>Add a project to your personal portfolio and the public catalog.</p>
+        </div>
+        <form method="post" enctype="multipart/form-data" class="feature-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="form-actions">
+                <a class="secondary-button" href="{% url 'portfolio_my' %}">Cancel</a>
+                <button class="primary-button" type="submit">Save work</button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}
