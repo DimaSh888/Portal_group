@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Gallery — Portal Group{% endblock %}
+{% block content %}
+<section class="feature-page">
+    <header class="feature-header">
+        <div>
+            <span class="page-label">PORTAL GROUP</span>
+            <h1>Gallery</h1>
+            <p>Photos shared by the community.</p>
+        </div>
+        {% if user.is_authenticated %}
+        <a class="primary-button" href="{% url 'gallery_add' %}">+ Add image</a>
+        {% else %}
+        <a class="primary-button" href="{% url 'login' %}">Log in to add an image</a>
+        {% endif %}
+    </header>
+
+    <div class="feature-grid">
+        {% for image in images %}
+        <article class="feature-card">
+            <a class="feature-image-link" href="{{ image.image.url }}" target="_blank" rel="noopener">
+                <img class="feature-image" src="{{ image.image.url }}" alt="{{ image.title }}">
+            </a>
+            <div class="feature-card-body">
+                <h2>{{ image.title }}</h2>
+                {% if image.description %}<p>{{ image.description|linebreaksbr }}</p>{% endif %}
+                <p class="feature-meta">By <a href="{% url 'portfolio_user' image.creator_id %}">{{ image.creator.username }}</a> · {{ image.created_at|date:"d.m.Y" }}</p>
+                {% if user.is_authenticated and user.is_superuser or user == image.creator %}
+                <div class="feature-actions">
+                    <a class="secondary-button" href="{% url 'gallery_edit' image.id %}">Edit</a>
+                    <form method="post" action="{% url 'gallery_delete' image.id %}">
+                        {% csrf_token %}
+                        <button class="danger-button" type="submit">Delete</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </article>
+        {% empty %}
+        <div class="empty-state"><h2>No images yet</h2><p>Be the first to share an image.</p></div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
