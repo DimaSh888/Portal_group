@@ -90,3 +90,35 @@ class AdminUserForm(forms.ModelForm):
             self.fields['role'].initial = 'Student'
         else:
             self.fields['role'].initial = 'Student'
+
+
+from .models import GalleryImage, PortfolioWork
+
+
+class GalleryImageForm(forms.ModelForm):
+    class Meta:
+        model = GalleryImage
+        fields = ("title", "description", "image")
+        labels = {
+            "title": "Title",
+            "description": "Description",
+            "image": "Image",
+        }
+        widgets = {
+            "description": forms.Textarea(attrs={"rows": 4}),
+        }
+
+
+class PortfolioWorkForm(forms.ModelForm):
+    class Meta:
+        model = PortfolioWork
+        fields = ("title", "description", "image", "project_url")
+        labels = {
+            "title": "Title",
+            "description": "Description",
+            "image": "Preview image (optional)",
+            "project_url": "Project link (optional)",
+        }
+        widgets = {
+            "description": forms.Textarea(attrs={"rows": 5}),
+        }
