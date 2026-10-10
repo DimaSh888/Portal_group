@@ -1,9 +1,12 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import redirect, render, get_object_or_404
+from django.http import HttpResponseForbidden
+from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
-from .models import Advertisement
-from .forms import ProfileForm, RegisterForm, AdminUserForm, RegisterForm2
+from .models import Advertisement, GalleryImage, PortfolioWork
+from .forms import (ProfileForm, RegisterForm, AdminUserForm, RegisterForm2,
+                    GalleryImageForm, PortfolioWorkForm)
 
 
 class MainView(TemplateView):
@@ -298,3 +301,138 @@ def admin_delete_user(request, user_id):
         user.delete()
 
     return redirect("admin_users")
+
+
+# Gallery
+
+def gallery(request):
+    images = GalleryImage.objects.select_related("creator").order_by("-created_at")
+    return render(request, "portal_group/gallery.html", {"images": images})
+
+
+@login_required
+def gallery_add(request):
+    if request.method == "POST":
+        form = GalleryImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = form.save(commit=False)
+            image.creator = request.user
+            image.save()
+            return redirect("gallery")
+    else:
+        form = GalleryImageForm()
+
+    return render(request, "portal_group/gallery_form.html", {
+        "form": form,
+        "page_title": "Add image",
+    })
+
+
+def _can_manage_material(user, material):
+    return user.is_authenticated and (
+        user.is_superuser or material.creator_id == user.id
+    )
+
+
+@login_required
+def gallery_edit(request, image_id):
+    image = get_object_or_404(GalleryImage, pk=image_id)
+    if not _can_manage_material(request.user, image):
+        return HttpResponseForbidden("You can only edit your own images.")
+
+    if request.method == "POST":
+        form = GalleryImageForm(request.POST, request.FILES, instance=image)
+        if form.is_valid():
+            form.save()
+            return redirect("gallery")
+    else:
+        form = GalleryImageForm(instance=image)
+
+    return render(request, "portal_group/gallery_form.html", {
+        "form": form,
+        "page_title": "Edit image",
+    })
+
+
+@login_required
+@require_POST
+def gallery_delete(request, image_id):
+    image = get_object_or_404(GalleryImage, pk=image_id)
+    if not _can_manage_material(request.user, image):
+        return HttpResponseForbidden("You can only delete your own images.")
+    image.delete()
+    return redirect("gallery")
+
+
+# Portfolio
+def portfolio_catalog(request):
+    works = PortfolioWork.objects.select_related("creator").order_by("-created_at")
+    return render(request, "portal_group/portfolio_catalog.html", {"works": works})
+
+
+@login_required
+def portfolio_my(request):
+    works = PortfolioWork.objects.filter(creator=request.user).order_by("-created_at")
+    return render(request, "portal_group/portfolio_catalog.html", {
+        "works": works,
+        "my_works": True,
+    })
+
+
+def portfolio_user(request, user_id):
+    from django.contrib.auth.models import User
+
+    portfolio_user = get_object_or_404(User, pk=user_id)
+    works = PortfolioWork.objects.filter(creator=portfolio_user).order_by("-created_at")
+    return render(request, "portal_group/portfolio_catalog.html", {
+        "works": works,
+        "portfolio_user": portfolio_user,
+    })
+
+
+@login_required
+def portfolio_add(request):
+    if request.method == "POST":
+        form = PortfolioWorkForm(request.POST, request.FILES)
+        if form.is_valid():
+            work = form.save(commit=False)
+            work.creator = request.user
+            work.save()
+            return redirect("portfolio_my")
+    else:
+        form = PortfolioWorkForm()
+
+    return render(request, "portal_group/portfolio_form.html", {
+        "form": form,
+        "page_title": "Add portfolio work",
+    })
+
+
+@login_required
+def portfolio_edit(request, work_id):
+    work = get_object_or_404(PortfolioWork, pk=work_id)
+    if not _can_manage_material(request.user, work):
+        return HttpResponseForbidden("You can only edit your own work.")
+
+    if request.method == "POST":
+        form = PortfolioWorkForm(request.POST, request.FILES, instance=work)
+        if form.is_valid():
+            form.save()
+            return redirect("portfolio_my")
+    else:
+        form = PortfolioWorkForm(instance=work)
+
+    return render(request, "portal_group/portfolio_form.html", {
+        "form": form,
+        "page_title": "Edit portfolio work",
+    })
+
+
+@login_required
+@require_POST
+def portfolio_delete(request, work_id):
+    work = get_object_or_404(PortfolioWork, pk=work_id)
+    if not _can_manage_material(request.user, work):
+        return HttpResponseForbidden("You can only delete your own work.")
+    work.delete()
+    return redirect("portfolio_my")
