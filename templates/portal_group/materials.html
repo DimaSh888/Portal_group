@@ -1,0 +1,156 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="materials-container">
+    <div class="materials-header">
+        <div>
+            <h1>Materials</h1>
+            <p>Useful files, images, links and educational videos.</p>
+        </div>
+
+        {% if can_manage_materials %}
+            <a href="{% url 'material_create' %}" class="btn">Add Material</a>
+        {% endif %}
+    </div>
+
+    {% if materials %}
+        <div class="materials-grid">
+            {% for material in materials %}
+                <article class="material-card">
+                    <div class="material-card-content">
+                        <span class="material-type">
+                            {{ material.get_material_type_display }}
+                        </span>
+
+                        <h2>{{ material.title }}</h2>
+
+                        {% if material.description %}
+                            <p class="material-description">
+                                {{ material.description|linebreaksbr }}
+                            </p>
+                        {% endif %}
+
+                        {% if material.material_type == 'file' and material.file %}
+                            <a href="{{ material.file.url }}" class="btn" download>
+                                Download file
+                            </a>
+
+                        {% elif material.material_type == 'image' and material.image %}
+                            <a href="{{ material.image.url }}" target="_blank" rel="noopener noreferrer">
+                                <img
+                                    src="{{ material.image.url }}"
+                                    alt="{{ material.title }}"
+                                    class="material-image"
+                                >
+                            </a>
+
+                        {% elif material.material_type == 'link' and material.url %}
+                            <a
+                                href="{{ material.url }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="material-link"
+                            >
+                                Open link ↗
+                            </a>
+
+                        {% elif material.material_type == 'youtube' and material.url %}
+                            <div
+                                class="youtube-player"
+                                data-youtube-url="{{ material.url }}"
+                            >
+                                <p>
+                                    <a href="{{ material.url }}" target="_blank" rel="noopener noreferrer">
+                                        Watch on YouTube
+                                    </a>
+                                </p>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="material-card-footer">
+                        <span>
+                            Added by {{ material.creator.username }}
+                        </span>
+                        <span>
+                            {{ material.created_at|date:"d.m.Y" }}
+                        </span>
+                    </div>
+
+                    {% if user.is_superuser or material.creator == user and can_manage_materials %}
+                        <div class="material-actions">
+                            <a href="{% url 'material_edit' material.id %}" class="btn">
+                                Edit
+                            </a>
+
+                            <form
+                                method="post"
+                                action="{% url 'material_delete' material.id %}"
+                                onsubmit="return confirm('Are you sure you want to delete this material?');"
+                            >
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="materials-empty">
+            <h2>No materials yet</h2>
+            <p>Useful resources shared by teachers will appear here.</p>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+document.querySelectorAll('.youtube-player').forEach(function (player) {
+    const url = player.dataset.youtubeUrl;
+    let videoId = null;
+
+    try {
+        const parsedUrl = new URL(url);
+        const host = parsedUrl.hostname.replace(/^www\./, '');
+
+        if (host === 'youtu.be') {
+            videoId = parsedUrl.pathname.split('/').filter(Boolean)[0];
+        } else if (
+            host === 'youtube.com' ||
+            host === 'm.youtube.com' ||
+            host === 'youtube-nocookie.com'
+        ) {
+            if (parsedUrl.pathname === '/watch') {
+                videoId = parsedUrl.searchParams.get('v');
+            } else {
+                const parts = parsedUrl.pathname.split('/').filter(Boolean);
+
+                if (
+                    parts.length >= 2 &&
+                    ['embed', 'shorts', 'live'].includes(parts[0])
+                ) {
+                    videoId = parts[1];
+                }
+            }
+        }
+    } catch (error) {
+        videoId = null;
+    }
+
+    if (videoId && /^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
+        const iframe = document.createElement('iframe');
+        iframe.src = 'https://www.youtube.com/embed/' + videoId;
+        iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+        iframe.title = 'YouTube video player';
+        iframe.loading = 'lazy';
+        iframe.allow =
+            'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        iframe.allowFullscreen = true;
+        player.replaceChildren(iframe);
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="portfolio-container">
+    <div class="portfolio-header">
+        <div>
+            <h1>Student Portfolio</h1>
+            <p>Explore the best projects created by our students.</p>
+        </div>
+
+        <a href="{% url 'portfolio_create' %}" class="btn">
+            Add Project
+        </a>
+    </div>
+
+    <div class="portfolio-grid">
+        {% for work in works %}
+            <article class="portfolio-card">
+                {% if work.image %}
+                    <a href="{{ work.image.url }}" target="_blank">
+                        <img
+                            src="{{ work.image.url }}"
+                            alt="{{ work.title }}"
+                            class="portfolio-image"
+                        >
+                    </a>
+                {% endif %}
+
+                <div class="portfolio-card-content">
+                    <h2>{{ work.title }}</h2>
+                    <p>{{ work.description }}</p>
+
+                    <p class="portfolio-author">
+                        Created by {{ work.creator.username }}
+                    </p>
+
+                    {% if work.project_url %}
+                        <a href="{{ work.project_url }}"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            View Project
+                        </a>
+                    {% endif %}
+
+                    {% if work.project_file %}
+                        <p>
+                            <a href="{{ work.project_file.url }}" download>
+                                Download Project File
+                            </a>
+                        </p>
+                    {% endif %}
+                    {% if work.creator == request.user or request.user.is_superuser %}
+                    <div class="portfolio-actions">
+                        <a href="{% url 'portfolio_edit' work.pk %}" class="btn">
+                            Edit
+                        </a>
+
+                        <form method="post" action="{% url 'portfolio_delete' work.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn"
+                                    onclick="return confirm('Delete this project?')">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                {% endif %}
+                </div>
+            </article>
+            {% empty %}
+            <div class="portfolio-empty">
+                <div class="portfolio-empty-icon">▧</div>
+                <h2>No projects yet</h2>
+                <p>
+                    Your portfolio is waiting to be filled.
+                    Share your best projects with the community!
+                </p>
+                <a href="{% url 'portfolio_create' %}" class="btn">
+                    Add Your First Project
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

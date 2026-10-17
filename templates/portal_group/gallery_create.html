@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="gallery-form-container">
+    <a href="{% url 'gallery' %}" class="gallery-back">
+        ← Back to Gallery
+    </a>
+
+    <div class="gallery-form-card">
+        <h1>Add an Image</h1>
+        <p class="gallery-form-subtitle">
+            Share a new photo with the community.
+        </p>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="gallery-form-group">
+                <label for="title">Image Title</label>
+                <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    maxlength="100"
+                    placeholder="Enter image title"
+                    required
+                >
+            </div>
+
+            <div class="gallery-form-group">
+                <label for="description">Description</label>
+                <textarea
+                    id="description"
+                    name="description"
+                    placeholder="Describe your image (optional)"
+                    rows="4"
+                ></textarea>
+            </div>
+
+            <div class="gallery-form-group">
+                <label for="image">Choose Image</label>
+                <input
+                    type="file"
+                    id="image"
+                    name="image"
+                    accept="image/*"
+                    required
+                >
+            </div>
+
+            <div class="gallery-form-actions">
+                <button type="submit" class="gallery-button">
+                    Upload Image
+                </button>
+
+                <a href="{% url 'gallery' %}" class="gallery-cancel">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

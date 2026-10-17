@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="gallery-container">
+    <div class="gallery-header">
+        <div>
+            <h1>Gallery</h1>
+            <p>Explore photos shared by our community.</p>
+        </div>
+
+        <a href="{% url 'gallery_create' %}" class="gallery-button">
+            + Add Image
+        </a>
+    </div>
+
+    {% if images %}
+        <div class="gallery-grid">
+            {% for item in images %}
+                <div class="gallery-card">
+                    <img
+                        src="{{ item.image.url }}"
+                        alt="{{ item.title }}"
+                        class="gallery-image"
+                        onclick="openGalleryImage(this)"
+                        loading="lazy"
+                    >
+
+                    <div class="gallery-card-content">
+                        <h3>{{ item.title }}</h3>
+
+                        {% if item.description %}
+                            <p>{{ item.description }}</p>
+                        {% endif %}
+
+                        <div class="gallery-meta">
+                            <span>By {{ item.creator.username }}</span>
+                            <span>{{ item.created_at|date:"d.m.Y" }}</span>
+                        </div>
+
+                        {% if user.is_superuser or item.creator == user %}
+                            <form
+                                method="post"
+                                action="{% url 'gallery_delete' item.id %}"
+                                onsubmit="return confirm('Are you sure you want to delete this image?');"
+                            >
+                                {% csrf_token %}
+                                <button type="submit" class="gallery-delete-button">
+                                    Delete
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="gallery-empty">
+            <h2>No images yet</h2>
+            <p>Be the first to share a photo with the community.</p>
+
+            <a href="{% url 'gallery_create' %}" class="gallery-button">
+                Upload the first image
+            </a>
+        </div>
+    {% endif %}
+</div>
+<div id="gallery-lightbox" class="gallery-lightbox"
+     onclick="closeGalleryImage()">
+    <button type="button" class="gallery-lightbox-close"
+            aria-label="Close image"
+            onclick="event.stopPropagation(); closeGalleryImage();">
+        &times;
+    </button>
+
+    <img id="gallery-lightbox-image"
+         class="gallery-lightbox-image"
+         src=""
+         alt=""
+         onclick="event.stopPropagation()">
+
+    <p id="gallery-lightbox-caption"
+       class="gallery-lightbox-caption"></p>
+</div>
+
+<script>
+    function openGalleryImage(image) {
+        const lightbox = document.getElementById('gallery-lightbox');
+        const preview = document.getElementById('gallery-lightbox-image');
+        const caption = document.getElementById('gallery-lightbox-caption');
+
+        preview.src = image.src;
+        preview.alt = image.alt;
+        caption.textContent = image.alt;
+
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeGalleryImage() {
+        const lightbox = document.getElementById('gallery-lightbox');
+
+        lightbox.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeGalleryImage();
+        }
+    });
+</script>
+{% endblock %}

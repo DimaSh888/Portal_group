@@ -1,0 +1,97 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="material-form-container">
+    <h1>{{ page_title }}</h1>
+    <p>Add a useful file, image, website link or YouTube video.</p>
+
+    {% if error %}
+        <p class="material-form-error">{{ error }}</p>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="material-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input
+                type="text"
+                id="title"
+                name="title"
+                maxlength="150"
+                value="{{ material.title|default:'' }}"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea
+                id="description"
+                name="description"
+                rows="4"
+            >{{ material.description|default:'' }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="material_type">Material type</label>
+            <select id="material_type" name="material_type" required>
+                <option value="file"
+                    {% if material.material_type == 'file' or not material %}selected{% endif %}>
+                    File
+                </option>
+                <option value="image"
+                    {% if material.material_type == 'image' %}selected{% endif %}>
+                    Image
+                </option>
+                <option value="link"
+                    {% if material.material_type == 'link' %}selected{% endif %}>
+                    Website link
+                </option>
+                <option value="youtube"
+                    {% if material.material_type == 'youtube' %}selected{% endif %}>
+                    YouTube video
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="file">File</label>
+            {% if material.file %}
+                <p>Current file: <a href="{{ material.file.url }}">{{ material.file.name }}</a></p>
+            {% endif %}
+            <input type="file" id="file" name="file">
+        </div>
+
+        <div class="form-group">
+            <label for="image">Image</label>
+            {% if material.image %}
+                <p>Current image:</p>
+                <img
+                    src="{{ material.image.url }}"
+                    alt="{{ material.title }}"
+                    class="material-form-image"
+                >
+            {% endif %}
+            <input type="file" id="image" name="image" accept="image/*">
+        </div>
+
+        <div class="form-group">
+            <label for="url">Website or YouTube URL</label>
+            <input
+                type="url"
+                id="url"
+                name="url"
+                value="{{ material.url|default:'' }}"
+                placeholder="https://..."
+            >
+        </div>
+
+        <div class="material-form-actions">
+            <button type="submit" class="btn">Save Material</button>
+            <a href="{% url 'materials' %}" class="btn">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
