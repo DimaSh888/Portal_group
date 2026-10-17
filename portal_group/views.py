@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views.generic import TemplateView
-from .models import Advertisement
+from .models import Advertisement, GalleryImage
 from .forms import ProfileForm, RegisterForm, AdminUserForm, RegisterForm2
 
 
@@ -382,3 +382,40 @@ def event_delete(request, event_id):
         event.delete()
         return redirect('event_calendar')
     return render(request, 'portal_group/event_delete.html', {'event': event})
+
+@login_required
+def gallery(request):
+    images = GalleryImage.objects.all().order_by('-created_at')
+
+    return render(request, 'portal_group/gallery.html', {
+        'images': images,
+    })
+
+
+@login_required
+def gallery_create(request):
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        image = request.FILES.get('image')
+
+        if title and image:
+            GalleryImage.objects.create(
+                title=title,
+                description=description,
+                image=image,
+                creator=request.user,
+            )
+            return redirect('gallery')
+
+    return render(request, 'portal_group/gallery_create.html')
+
+@login_required
+def gallery_delete(request, image_id):
+    image = get_object_or_404(GalleryImage, id=image_id)
+
+    if request.method == 'POST':
+        if request.user.is_superuser or image.creator == request.user:
+            image.delete()
+
+    return redirect('gallery')

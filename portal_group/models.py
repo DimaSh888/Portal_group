@@ -29,3 +29,17 @@ class Event(models.Model):
 
     def __str__(self):
         return f'{self.title} ({self.event_date})'
+
+class GalleryImage(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    image = models.ImageField(upload_to='gallery/')
+    creator = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='gallery_images'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
