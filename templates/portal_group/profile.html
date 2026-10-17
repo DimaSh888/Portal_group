@@ -1,54 +1,78 @@
+
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="profile-page">
+    <div class="profile-heading">
+        <span class="profile-eyebrow">YOUR ACCOUNT</span>
+        <h1>My Profile</h1>
+        <p>Manage your personal information and account settings.</p>
+    </div>
 
-<div class="auth-container">
+    <section class="profile-card">
+        <div class="profile-banner"></div>
 
-    <h1>Profile</h1>
+        <div class="profile-main">
+            <div class="profile-avatar">
+                {{ user.username|first|upper }}
+            </div>
 
-    <p>
-        <strong>Username:</strong>
-        {{ user.username }}
-    </p>
+            <div class="profile-identity">
+                <h2>
+                    {% if user.first_name or user.last_name %}
+                        {{ user.first_name }} {{ user.last_name }}
+                    {% else %}
+                        {{ user.username }}
+                    {% endif %}
+                </h2>
+                <p>@{{ user.username }}</p>
+                <span class="profile-role">{{ role }}</span>
+            </div>
+        </div>
 
-    <p>
-        <strong>Email:</strong>
-        {{ user.email }}
-    </p>
+        <div class="profile-divider"></div>
 
-    <p>
-        <strong>Role:</strong>
-        {{ role }}
-    </p>
+        <div class="profile-details">
+            <div class="profile-detail">
+                <span class="profile-detail-label">Username</span>
+                <span class="profile-detail-value">{{ user.username }}</span>
+            </div>
 
-    <p>
-        <strong>First name:</strong>
-        {{ user.first_name|default:"Не указано" }}
-    </p>
+            <div class="profile-detail">
+                <span class="profile-detail-label">Email address</span>
+                <span class="profile-detail-value">
+                    {{ user.email|default:"Not provided" }}
+                </span>
+            </div>
 
-    <p>
-        <strong>Last name:</strong>
-        {{ user.last_name|default:"Не указана" }}
-    </p>
+            <div class="profile-detail">
+                <span class="profile-detail-label">First name</span>
+                <span class="profile-detail-value">
+                    {{ user.first_name|default:"Not provided" }}
+                </span>
+            </div>
 
-    <p>
-        <a href="{% url 'edit_profile' %}">
-            Edit profile
-        </a>
-    </p>
+            <div class="profile-detail">
+                <span class="profile-detail-label">Last name</span>
+                <span class="profile-detail-value">
+                    {{ user.last_name|default:"Not provided" }}
+                </span>
+            </div>
+        </div>
 
-    <p>
-        <a href="/">
-            ← Back to Home
-        </a>
-    </p>
+        <div class="profile-actions">
+            <a href="{% url 'edit_profile' %}" class="profile-button profile-button-primary">
+                Edit profile
+            </a>
 
-    <p>
-        <a href="{% url 'logout' %}">
-            Log out
-        </a>
-    </p>
+            <a href="/" class="profile-button profile-button-secondary">
+                Back to Home
+            </a>
 
+            <a href="{% url 'logout' %}" class="profile-logout">
+                Log out
+            </a>
+        </div>
+    </section>
 </div>
-
 {% endblock %}
