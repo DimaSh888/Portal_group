@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views.generic import TemplateView
-from .models import Advertisement, GalleryImage, PortfolioWork
+from .models import Advertisement, GalleryImage, PortfolioWork, Material
 from .forms import ProfileForm, RegisterForm, AdminUserForm, RegisterForm2
 
 
@@ -500,3 +500,150 @@ def portfolio_delete(request, pk):
         work.delete()
 
     return redirect('portfolio')
+
+def can_manage_materials(user):
+    return (
+        user.is_authenticated
+        and (
+            user.is_superuser
+            or user.groups.filter(name='Teacher').exists()
+        )
+    )
+
+
+def materials(request):
+    items = Material.objects.select_related(
+        'creator'
+    ).all()
+
+    return render(request, 'portal_group/materials.html', {
+        'materials': items,
+        'can_manage_materials': can_manage_materials(request.user),
+    })
+
+
+@login_required
+def material_create(request):
+    if not can_manage_materials(request.user):
+        return render(request, 'portal_group/register_denied.html')
+
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        material_type = request.POST.get('material_type', 'file')
+        url = request.POST.get('url', '').strip()
+        uploaded_file = request.FILES.get('file')
+        uploaded_image = request.FILES.get('image')
+
+        valid_types = ['file', 'image', 'link', 'youtube']
+
+        has_content = (
+            (material_type == 'file' and uploaded_file)
+            or (material_type == 'image' and uploaded_image)
+            or (material_type in ['link', 'youtube'] and url)
+        )
+
+        if title and material_type in valid_types and has_content:
+            Material.objects.create(
+                title=title,
+                description=description,
+                material_type=material_type,
+                file=uploaded_file if material_type == 'file' else None,
+                image=uploaded_image if material_type == 'image' else None,
+                url=url if material_type in ['link', 'youtube'] else '',
+                creator=request.user,
+            )
+            return redirect('materials')
+
+        return render(request, 'portal_group/material_form.html', {
+            'page_title': 'Add material',
+            'error': 'Enter a title and provide the required file or link.',
+        })
+
+    return render(request, 'portal_group/material_form.html', {
+        'page_title': 'Add material',
+    })
+
+
+@login_required
+def material_edit(request, material_id):
+    material = get_object_or_404(Material, pk=material_id)
+
+    if not can_manage_materials(request.user):
+        return render(request, 'portal_group/register_denied.html')
+
+    if material.creator != request.user and not request.user.is_superuser:
+        return render(request, 'portal_group/register_denied.html')
+
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        material_type = request.POST.get('material_type', '')
+        url = request.POST.get('url', '').strip()
+        uploaded_file = request.FILES.get('file')
+        uploaded_image = request.FILES.get('image')
+
+        valid_types = ['file', 'image', 'link', 'youtube']
+
+        if title and material_type in valid_types:
+            if material_type == 'file' and not uploaded_file and not material.file:
+                return render(request, 'portal_group/material_form.html', {
+                    'page_title': 'Edit material',
+                    'material': material,
+                    'error': 'Please select a file.',
+                })
+
+            if material_type == 'image' and not uploaded_image and not material.image:
+                return render(request, 'portal_group/material_form.html', {
+                    'page_title': 'Edit material',
+                    'material': material,
+                    'error': 'Please select an image.',
+                })
+
+            if material_type in ['link', 'youtube'] and not url:
+                return render(request, 'portal_group/material_form.html', {
+                    'page_title': 'Edit material',
+                    'material': material,
+                    'error': 'Please enter a link.',
+                })
+
+            material.title = title
+            material.description = description
+            material.material_type = material_type
+            material.url = url if material_type in ['link', 'youtube'] else ''
+
+            if material_type == 'file':
+                if uploaded_file:
+                    material.file = uploaded_file
+                material.image = None
+            elif material_type == 'image':
+                if uploaded_image:
+                    material.image = uploaded_image
+                material.file = None
+            else:
+                material.file = None
+                material.image = None
+
+            material.save()
+            return redirect('materials')
+
+    return render(request, 'portal_group/material_form.html', {
+        'page_title': 'Edit material',
+        'material': material,
+    })
+
+
+@login_required
+def material_delete(request, material_id):
+    material = get_object_or_404(Material, pk=material_id)
+
+    if not can_manage_materials(request.user):
+        return render(request, 'portal_group/register_denied.html')
+
+    if material.creator != request.user and not request.user.is_superuser:
+        return render(request, 'portal_group/register_denied.html')
+
+    if request.method == 'POST':
+        material.delete()
+
+    return redirect('materials')

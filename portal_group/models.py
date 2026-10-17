@@ -67,3 +67,49 @@ class PortfolioWork(models.Model):
 
     def __str__(self):
         return self.title
+
+class Material(models.Model):
+    MATERIAL_TYPES = [
+        ('file', 'File'),
+        ('image', 'Image'),
+        ('link', 'Link'),
+        ('youtube', 'YouTube Video'),
+    ]
+
+    title = models.CharField(max_length=150)
+    description = models.TextField(blank=True)
+
+    material_type = models.CharField(
+        max_length=10,
+        choices=MATERIAL_TYPES,
+        default='file'
+    )
+
+    file = models.FileField(
+        upload_to='materials/files/',
+        blank=True,
+        null=True
+    )
+
+    image = models.ImageField(
+        upload_to='materials/images/',
+        blank=True,
+        null=True
+    )
+
+    url = models.URLField(blank=True)
+
+    creator = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='materials'
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.title

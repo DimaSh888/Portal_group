@@ -36,6 +36,10 @@ urlpatterns = [
      path('portfolio/create/', views.portfolio_create, name='portfolio_create'),
      path('portfolio/<int:pk>/edit/', views.portfolio_edit, name='portfolio_edit'),
      path('portfolio/<int:pk>/delete/', views.portfolio_delete, name='portfolio_delete'),
+     path('materials/', views.materials, name='materials'),
+     path('materials/create/', views.material_create, name='material_create'),
+     path('materials/<int:material_id>/edit/', views.material_edit, name='material_edit'),
+     path('materials/<int:material_id>/delete/', views.material_delete, name='material_delete'),
 
 ]
 if settings.DEBUG:
