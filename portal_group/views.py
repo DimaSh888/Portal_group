@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views.generic import TemplateView
-from .models import Advertisement, GalleryImage
+from .models import Advertisement, GalleryImage, PortfolioWork
 from .forms import ProfileForm, RegisterForm, AdminUserForm, RegisterForm2
 
 
@@ -419,3 +419,84 @@ def gallery_delete(request, image_id):
             image.delete()
 
     return redirect('gallery')
+
+@login_required
+def portfolio(request):
+    works = PortfolioWork.objects.select_related(
+        'creator'
+    ).order_by('-created_at')
+
+    return render(request, 'portal_group/portfolio.html', {
+        'works': works,
+    })
+
+
+@login_required
+def portfolio_create(request):
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        project_url = request.POST.get('project_url', '').strip()
+        image = request.FILES.get('image')
+        project_file = request.FILES.get('project_file')
+
+        if title and description:
+            PortfolioWork.objects.create(
+                title=title,
+                description=description,
+                project_url=project_url,
+                image=image,
+                project_file=project_file,
+                creator=request.user,
+            )
+            return redirect('portfolio')
+
+    return render(request, 'portal_group/portfolio_form.html', {
+        'page_title': 'Add project',
+    })
+
+@login_required
+def portfolio_edit(request, pk):
+    work = get_object_or_404(PortfolioWork, pk=pk)
+
+    if work.creator != request.user and not request.user.is_superuser:
+        return redirect('portfolio')
+
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        project_url = request.POST.get('project_url', '').strip()
+        image = request.FILES.get('image')
+        project_file = request.FILES.get('project_file')
+
+        if title and description:
+            work.title = title
+            work.description = description
+            work.project_url = project_url
+
+            if image:
+                work.image = image
+
+            if project_file:
+                work.project_file = project_file
+
+            work.save()
+            return redirect('portfolio')
+
+    return render(request, 'portal_group/portfolio_form.html', {
+        'page_title': 'Edit project',
+        'work': work,
+    })
+
+
+@login_required
+def portfolio_delete(request, pk):
+    work = get_object_or_404(PortfolioWork, pk=pk)
+
+    if work.creator != request.user and not request.user.is_superuser:
+        return redirect('portfolio')
+
+    if request.method == 'POST':
+        work.delete()
+
+    return redirect('portfolio')

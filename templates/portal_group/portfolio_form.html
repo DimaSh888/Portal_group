@@ -1,0 +1,67 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="portfolio-form-container">
+    <h1>{{ page_title }}</h1>
+    <p>Share your project with the community.</p>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="title">Project Title</label>
+            <input
+                type="text"
+                id="title"
+                name="title"
+                maxlength="100"
+                value="{{ work.title|default:'' }}"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea
+                id="description"
+                name="description"
+                rows="5"
+                required
+            ></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="image">Project Screenshot</label>
+            <input
+                type="file"
+                id="image"
+                name="image"
+                accept="image/*"
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="project_url">Project Link</label>
+            <input
+                type="url"
+                id="project_url"
+                name="project_url"
+                placeholder="https://example.com"
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="project_file">Project File</label>
+            <input
+                type="file"
+                id="project_file"
+                name="project_file"
+            >
+        </div>
+
+        <button type="submit" class="btn">Save Project</button>
+        <a href="{% url 'portfolio' %}">Cancel</a>
+    </form>
+</div>
+{% endblock %}
